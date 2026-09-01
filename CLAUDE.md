@@ -8,14 +8,25 @@ Um ecossistema de agentes de IA para gerar marketing, conteúdo, sites, cursos, 
 O sistema funciona para qualquer negócio. Toda a personalização vive em `_memoria/` e `identidade/`. Os agentes e skills são genéricos.
 
 ## Primeiro uso — Onboarding obrigatório
-Se `_memoria/empresa.md` ainda contém os placeholders entre `{{ }}`, o sistema NÃO foi configurado.
+Se qualquer arquivo de `_memoria/` ainda contém placeholders entre `{{ }}`, o sistema NÃO foi
+configurado.
 
 Nesse caso:
 1. Ative o `agentes/00-onboarding-agent.md`
-2. Ele vai entrevistar o usuário e preencher `_memoria/` e `identidade/`
-3. Só depois disso, os outros agentes podem ser usados
+2. Se o cliente já respondeu a entrevista de WhatsApp, entregue o `dossie-<cliente>.md` e o
+   agente roda `skills/ingestao-dossie.md` sozinho. Se não respondeu, ele entrevista ao vivo
+3. Depois ele roda `skills/dna-de-voz.md` e `skills/aquecimento-inicial.md`
+4. Só depois disso, os outros agentes podem ser usados
 
 Nunca gere conteúdo, anúncio, site ou agente antes do onboarding estar completo.
+
+### O que define "onboarding completo"
+Não basta `empresa.md`. O sistema só está calibrado quando também existem:
+- `_memoria/dna-de-voz.md` preenchido a partir de material REAL do cliente
+- `_memoria/experiencias.md` com no mínimo 8 experiências reais
+- `_memoria/antimodelo.md` preenchido
+
+Sem esses três, o que sai é conteúdo genérico com o nome do cliente em cima.
 
 ## Mapa do sistema — 10 agentes
 
@@ -51,6 +62,8 @@ uma vez (ver README). As cores e tipografia vêm sempre de `identidade/paleta.cs
 ## Estrutura de pastas
 ```
 _memoria/        memória persistente do negócio (lida no início de toda sessão)
+                 empresa, persona, preferencias, estrategia, crm
+                 dna-de-voz, experiencias, referencias, antimodelo, teses
 identidade/      paleta, tipografia, assets visuais
 agentes/         os 10 agentes do sistema
 skills/          skills de geração que os agentes usam
@@ -63,8 +76,23 @@ cursos/          estrutura e conteúdo de cursos
 saidas/          entregáveis prontos para aprovação
 ```
 
+## Regra da experiência real
+Nenhuma peça de conteúdo nasce de hipótese quando existe experiência real disponível em
+`_memoria/experiencias.md`. Toda peça puxa uma experiência do banco como base e marca ela como
+usada. Quando sobrarem menos de 5 experiências não usadas, avisar o cliente e pedir mais antes
+de continuar produzindo.
+
+## Regra das teses
+Toda pauta de conteúdo relevante consulta `_memoria/teses.md` antes de decidir o ângulo — a peça
+defende uma tese, mesmo quando a tese não aparece literalmente no texto. Se o arquivo ainda
+tiver só placeholders, rodar o bloco "O que você defende" da entrevista ou perguntar direto ao
+cliente antes de seguir. Uma tese domina a maioria das peças da semana (repetição estratégica),
+não uma ideia nova por peça.
+
 ## Instruções gerais para o Claude
 - Sempre ler `_memoria/` antes de gerar qualquer coisa
+- Escrever na voz de `_memoria/dna-de-voz.md`, não numa voz genérica de marketing
+- Checar `_memoria/antimodelo.md` antes de entregar. Violação ali reprova no gate de QA
 - Tom de voz e regras de comunicação ficam em `_memoria/preferencias.md` — seguir sempre
 - Nada vai direto para publicação: saídas vão para `/saidas/aprovacoes/` primeiro
 - Scripts e copies: entregar pronto para copiar, sem explicação excessiva
